@@ -1,0 +1,64 @@
+version: '3.8'
+networks:
+       my-network:
+services:
+    api:
+        build:
+            context: ./api
+        image: api_image
+        env_file: .env
+        container_name: api_container
+        volumes:
+            - ./api:/app
+        depends_on:
+            - db
+        ports:
+            - "8000:8000"
+        networks:
+            - my-network
+
+    scraper:
+        build:
+            context: ./scraper
+        image: scraper_image
+        container_name: scraper_container
+        env_file: .env
+        volumes:
+            - ./scraper:/app
+        ports:
+            - "8001:8001"
+        networks:
+            - my-network
+
+    db:
+        env_file: .env
+        image: postgres:13-alpine
+        environment:
+            POSTGRES_USER: ${DB_USER}
+            POSTGRES_PASSWORD: ${DB_PASS}
+            POSTGRES_DB: ${DB_NAME}
+        ports:
+            - '5432:5432'
+        volumes:
+            - "/postgres_data:/var/lib/postgresql/data"
+        networks:
+          - my-network
+
+    api_tests:
+        env_file: .env
+        build:
+            context: ./api
+            dockerfile: test.Dockerfile
+        container_name: api_test_container
+        command: [ "pytest" ]
+        depends_on:
+            - api
+        networks:
+            - my-network
+
+    scraper_tests:
+        build:
+            context: ./scraper
+            dockerfile: test.Dockerfile
+        container_name: scraper_test_container
+        command: [ "pytest" ]
