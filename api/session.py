@@ -1,9 +1,11 @@
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine, AsyncSession
 from settings import settings
+from sqlalchemy.pool import NullPool
 
 engine = create_async_engine(
     url=settings.DATABASE_URL_asyncpg,
-    echo=True
+    echo=True,
+    poolclass=NullPool
 )
 
 SessionLocal = async_sessionmaker(autocommit=False,

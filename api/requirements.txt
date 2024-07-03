@@ -1,7 +1,5 @@
-sqlalchemy
 fastapi
-pytest
-pytest-asyncio
-httpx
-pydantic_settings
+sqlalchemy
 asyncpg
+pydantic
+pydantic_settings

@@ -1,0 +1,13 @@
+DB_USER=<user>
+DB_PASS=<pass>
+DB_NAME=<name>
+DB_PORT=<port>
+
+BOT_TOKEN=<your_token>
+
+API_ROUTE=http://api:8000/vacancies/
+SCRAPER_ROUTE=http://scraper:8001/parse/
+HH_ROUTE=https://api.hh.ru/vacancies
+SHEETS_ROUTE=http://sheets:8002/create
+
+GOOGLE_TOKEN=token/<your_json>

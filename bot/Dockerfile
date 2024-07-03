@@ -8,6 +8,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-RUN pip install pytest pytest-asyncio httpx
-
-CMD ["pytest"]
+CMD ["python", "__main__.py"]

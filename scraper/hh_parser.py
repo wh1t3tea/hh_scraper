@@ -1,28 +1,18 @@
-import asyncio
+import os
+
 import aiohttp
 
 
-async def parse_vacancies(name,
-                          area=1,
-                          page=0,
-                          salary=100000,
-                          employment="full",
-                          experience="noExperience",
-                          vacancy_search_order="publication_time"):
+async def parse_vacancies(data):
+    params = {key: value for key, value in data.items()}
 
-    params = {
-        'text': f'NAME:{name}',
-        'area': area,
-        'page': page,
-        'per_page': 100,
-        'salary': salary,
-        'employment': employment,
-        'experience': experience,
-        'vacancy_search_order': vacancy_search_order
-    }
+    params["per_page"] = 100
+
+    if params["page"] is None:
+        params["page"] = 0
 
     params = {k: v for k, v in params.items() if v is not None}
-    url = 'https://api.hh.ru/vacancies'
+    url = os.environ["HH_ROUTE"]
 
     async with aiohttp.ClientSession() as session:
         async with session.get(url=url, params=params) as response:
@@ -31,4 +21,3 @@ async def parse_vacancies(name,
                 return data
             else:
                 return None
-

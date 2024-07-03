@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, BigInteger, Text
+
 from base import Base
 
 
@@ -16,3 +17,4 @@ class VacancyORM(Base):
     requirement = Column(Text, default=None)
     responsibility = Column(Text, default=None)
     employment = Column(Text, default=None)
+    text = Column(Text, default=None)
