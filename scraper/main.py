@@ -8,7 +8,7 @@ app = FastAPI()
 
 
 @app.get("/parse/")
-async def parse(text: Optional[str] = Query(None),
+async def parse(name: Optional[str] = Query(None),
                 salary: Optional[int] = Query(None),
                 employment: Optional[str] = Query(None),
                 experience: Optional[str] = Query(None),
@@ -16,7 +16,7 @@ async def parse(text: Optional[str] = Query(None),
                 page: Optional[int] = Query(None),
                 area: Optional[int] = Query(None)):
     vac_dict = {
-        "text": text,
+        "name": name,
         "salary": salary,
         "employment": employment,
         "experience": experience,

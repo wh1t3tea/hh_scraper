@@ -6,6 +6,10 @@ import asyncio
 
 @pytest.mark.asyncio
 async def test_create_data():
+    _sem = asyncio.Semaphore(1)
+
+    async with _sem:  # next coroutine(s) will stuck here until the previous is done
+        await asyncio.sleep(1)
     connector = aiohttp.TCPConnector(ssl=False)
     async with aiohttp.ClientSession(connector=connector) as session:
         new_vacancy = {
@@ -27,6 +31,12 @@ async def test_create_data():
 
 @pytest.mark.asyncio
 async def test_read_data():
-    async with aiohttp.ClientSession() as session:
+    _sem = asyncio.Semaphore(1)
+
+    async with _sem:  # next coroutine(s) will stuck here until the previous is done
+        await asyncio.sleep(1)
+
+    connector = aiohttp.TCPConnector(ssl=False)
+    async with aiohttp.ClientSession(connector=connector) as session:
         async with session.get(os.environ["API_ROUTE"], params={"hh_id": 12346}) as response:
             assert response.status == 200

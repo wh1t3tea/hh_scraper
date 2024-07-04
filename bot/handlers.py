@@ -52,7 +52,37 @@ async def fetch_vacancy_data(session, user_data):
 @command_router.message(Command('start'))
 async def main_menu(message: types.Message, state: FSMContext):
     await state.clear()
-    await message.answer("Here you can parse hh.ru or get saved data. Use /parse to start parsing.")
+    await message.answer(
+        "Here you can parse hh.ru or get saved data.\nUse /parse to start parsing.\nUse /analytics to get "
+        "analytics\nUse /start to back to Main Menu")
+
+
+@command_router.message(Command('analytics'))
+async def get_analytics(message: types.Message, state: FSMContext):
+    await state.clear()
+
+    async with aiohttp.ClientSession() as session:
+        async with session.get(os.environ["API_ANALYTICS_ROUTE"]) as response:
+            stats = await response.json()
+
+    stats_text = [f"Average salary: {round(stats['avg_salary_from'])}", f"Vacancy count: {stats['vacancy_count']}"]
+
+    if len(stats["top_text_words"]) > 0:
+        top_text_s = '\n'.join(
+            [f"   - {stats['top_text_words'][i]['word']}: {stats['top_text_words'][i]['count']} times" for i in
+             range(len(stats["top_text_words"]))])
+        stats_text.append(f"Top key words:\n {top_text_s}")
+
+    if len(stats["top_area_words"]) > 0:
+        top_area_s = '\n'.join(
+            [f"   - {stats['top_area_words'][i]['word']}: {stats['top_area_words'][i]['count']} times" for i in
+             range(len(stats["top_area_words"]))])
+        stats_text.append(f"Top areas:\n {top_area_s}")
+
+    stats_text = "\n".join(stats_text)
+
+    await message.answer(stats_text)
+    await state.set_state(Form.Start)
 
 
 @state_router.message(Form.MainMenu)
@@ -76,7 +106,7 @@ async def get_vacancy_name(message: types.Message, state: FSMContext):
         await state.set_state(Form.Start)
         return 0
 
-    await state.update_data(text=message.text)
+    await state.update_data(name=message.text)
     await state.set_state(Form.SalaryFrom)
 
     salary_kb = ReplyKeyboardMarkup(resize_keyboard=True,

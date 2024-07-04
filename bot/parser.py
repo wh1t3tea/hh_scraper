@@ -30,7 +30,6 @@ class ParserOutHandler:
             vac_dict["area_id"] = vac["area"]["id"]
             vac_dict["salary_from"] = vac["salary"]["from"]
             vac_dict["salary_to"] = vac["salary"]["to"]
-            vac_dict["text"] = vac["text"]
 
             async with aiohttp.ClientSession() as session:
                 async with session.post(url=os.environ["API_ROUTE"], json=vac_dict) as response:

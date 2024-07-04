@@ -1,8 +1,10 @@
+import json
+from collections import Counter
 from typing import List
 from typing import Optional
 
-from fastapi import FastAPI, Depends, HTTPException, status, Query
-from sqlalchemy import select, and_
+from fastapi import FastAPI, Depends, HTTPException, status, Query, Response
+from sqlalchemy import select, and_, func
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -96,3 +98,38 @@ async def read_vacancies(vacancy_id: Optional[int] = Query(None),
     vacancies = results.scalars().all()
 
     return vacancies
+
+
+@app.get("/analytics/", response_model=dict)
+async def get_stats(db: AsyncSession = Depends(get_db)):
+    stats = {}
+
+    result = await db.execute(
+        select(func.avg(VacancyORM.salary_from))
+        .where(VacancyORM.salary_from > 0)
+    )
+    stats['avg_salary_from'] = float(result.scalar())  # Convert to float
+
+    # 2. Подсчет количества значений в таблице
+    result = await db.execute(select(func.count(VacancyORM.vacancy_id)))
+    stats['vacancy_count'] = result.scalar()
+
+    text_words = []
+    vacancies = await db.execute(select(VacancyORM.name))
+    for vacancy in vacancies.fetchall():
+        if vacancy.name:
+            text_words.extend(vacancy.name.split())
+    if text_words:
+        word_counts = Counter(text_words).most_common(3)
+        stats['top_text_words'] = [{'word': word, 'count': count} for word, count in word_counts]
+
+    area_words = []
+    vacancies = await db.execute(select(VacancyORM.area))
+    for vacancy in vacancies.fetchall():
+        if vacancy.area:
+            area_words.extend(vacancy.area.split())
+    if area_words:
+        area_counts = Counter(area_words).most_common(3)
+        stats['top_area_words'] = [{'word': word, 'count': count} for word, count in area_counts]
+
+    return Response(json.dumps(stats), media_type="application/json")
