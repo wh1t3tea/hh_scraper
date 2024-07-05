@@ -251,15 +251,15 @@ async def get_num_vacancies(message: Message, state: FSMContext):
 
     data = ParserOutHandler(vacancy_data, n_vacancies=20)
 
-    try:
-        await data.save_to_db()
-    except:
-        kb = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text="back to menu")]], resize_keyboard=True)
-        await state.clear()
-        await state.set_state(Form.MainMenu)
-        await message.answer("Can't find any vacancies with selected filters",
-                             reply_markup=kb)
-        return 0
+    #try:
+    await data.save_to_db()
+    #except:
+        #kb = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text="back to menu")]], resize_keyboard=True)
+        #await state.clear()
+        #await state.set_state(Form.MainMenu)
+        #await message.answer("Can't find any vacancies with selected filters",
+        #                     reply_markup=kb)
+        #return 0
 
     vac_to_show = await data.get_vacancies_to_show()
     message_parts = form_answer(vac_to_show)

@@ -9,12 +9,6 @@ class ParserOutHandler:
                  n_vacancies=20):
         self.data = data["items"] if data.get("items") else data
         self.n_vacancies = n_vacancies
-        self.outp_values = [
-            "name",
-            "salary_from",
-            "salary_to",
-            "alternate_url"
-        ]
 
     async def save_to_db(self):
         for vac in self.data:
@@ -28,8 +22,12 @@ class ParserOutHandler:
             vac_dict["responsibility"] = vac["snippet"]["responsibility"]
             vac_dict["employment"] = vac["employment"]["id"]
             vac_dict["area_id"] = vac["area"]["id"]
-            vac_dict["salary_from"] = vac["salary"]["from"]
-            vac_dict["salary_to"] = vac["salary"]["to"]
+            if vac["salary"] is not None:
+                vac_dict["salary_from"] = vac["salary"]["from"]
+                vac_dict["salary_to"] = vac["salary"]["to"]
+            else:
+                vac_dict["salary_from"] = None
+                vac_dict["salary_to"] = None
 
             async with aiohttp.ClientSession() as session:
                 async with session.post(url=os.environ["API_ROUTE"], json=vac_dict) as response:
@@ -46,8 +44,12 @@ class ParserOutHandler:
             vac_dict["name"] = vac["name"]
             vac_dict["url"] = vac["alternate_url"]
             vac_dict["area"] = vac["area"]["name"]
-            vac_dict["salary_from"] = vac["salary"]["from"]
-            vac_dict["salary_to"] = vac["salary"]["to"]
+            if vac["salary"] is not None:
+                vac_dict["salary_from"] = vac["salary"]["from"]
+                vac_dict["salary_to"] = vac["salary"]["to"]
+            else:
+                vac_dict["salary_from"] = None
+                vac_dict["salary_to"] = None
 
             vac_to_show.append(vac_dict)
 

@@ -16,7 +16,7 @@ async def parse(name: Optional[str] = Query(None),
                 page: Optional[int] = Query(None),
                 area: Optional[int] = Query(None)):
     vac_dict = {
-        "name": name,
+        "text": name,
         "salary": salary,
         "employment": employment,
         "experience": experience,

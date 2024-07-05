@@ -5,7 +5,6 @@ import aiohttp
 
 async def parse_vacancies(data):
     params = {key: value for key, value in data.items()}
-
     params["per_page"] = 100
 
     if params["page"] is None:
