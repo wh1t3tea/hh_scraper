@@ -12,7 +12,6 @@ API_route = os.environ["API_ROUTE"]
 
 
 async def main():
-    loop = asyncio.get_event_loop()
 
     bot = Bot(BOT_TOKEN)
 
